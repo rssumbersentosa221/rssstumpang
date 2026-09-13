@@ -25,8 +25,8 @@ class Nested_Document_Assets {
 	private $widget_area_candidates;
 
 	/**
-	 * Per-request cache of resolved widget style/script dependencies, keyed by widget type.
-	 * Avoids repeatedly hitting the widgets manager for widgets that repeat on a page.
+	 * Per-request cache of resolved widget style/script dependencies, keyed by widget type and settings.
+	 * Avoids rebuilding equivalent widget instances that repeat on a page.
 	 * @var array
 	 */
 	private $widget_dependency_cache = array();
@@ -113,12 +113,16 @@ class Nested_Document_Assets {
 			}
 
 			if ( ! empty( $element['widgetType'] ) ) {
-				$this->enqueue_widget_dependencies( $element['widgetType'] );
+				$this->enqueue_widget_dependencies( $element );
 			}
 
 			if ( ! empty( $element['settings']['elementskit_nav_menu'] ) ) {
 				foreach ( $this->get_nav_menu_items( $element['settings']['elementskit_nav_menu'] ) as $menu_item ) {
-					$widget_area_keys[] = 'megamenu-menuitem' . $menu_item->ID;
+					if ( ! is_object( $menu_item ) || empty( $menu_item->ID ) ) {
+						continue;
+					}
+
+					$widget_area_keys[] = 'megamenu-menuitem' . absint( $menu_item->ID );
 				}
 			}
 
@@ -140,35 +144,55 @@ class Nested_Document_Assets {
 	}
 
 	/**
-	 * Resolve and enqueue a widget type's style/script dependencies, caching the
-	 * lookup so a widget type repeated many times on a page only hits the
-	 * widgets manager once.
+	 * Resolve and enqueue a widget instance's style/script dependencies, caching
+	 * the lookup for widgets with the same type and settings.
 	 * @since 4.0.3
-	 * @param string $widget_type Elementor widget type name.
+	 * @param array $element Saved Elementor widget data.
 	 * @return void
 	 */
-	private function enqueue_widget_dependencies( $widget_type ) {
-		if ( ! isset( $this->widget_dependency_cache[ $widget_type ] ) ) {
+	private function enqueue_widget_dependencies( $element) {
+		//empty check for widgetType, because some widgets are not registered in Elementor and they don't have widgetType. So we need to check if widgetType is empty or not.
+		if ( empty( $element['widgetType'] ) ) {
+			return;
+		}
+
+		$widget_type = $element['widgetType'];
+		$settings    = isset( $element['settings'] ) && is_array( $element['settings'] ) ? $element['settings'] : array();
+		$cache_key   = $widget_type . ':' . md5( wp_json_encode( $settings ) );
+
+		if ( ! isset( $this->widget_dependency_cache[ $cache_key ] ) ) {
 			$dependencies = array(
 				'styles'  => array(),
 				'scripts' => array(),
 			);
 
-			$widget = \Elementor\Plugin::$instance->widgets_manager->get_widget_types( $widget_type );
-			if ( $widget ) {
+			/*
+			* Elementor's registered widget objects are prototypes and may not
+			* contain initialized settings. Create a real instance from the saved
+			* Elementor element data before resolving conditional dependencies.
+			*/
+			$element['elType']   = 'widget';
+			$element['settings'] = $settings;
+			$widget              = \Elementor\Plugin::$instance->elements_manager->create_element_instance( $element );
+			if ( $widget instanceof \Elementor\Widget_Base ) {
+
 				$dependencies['styles']  = (array) $widget->get_style_depends();
 				$dependencies['scripts'] = (array) $widget->get_script_depends();
 			}
 
-			$this->widget_dependency_cache[ $widget_type ] = $dependencies;
+			$this->widget_dependency_cache[ $cache_key ] = $dependencies;
 		}
 
-		foreach ( $this->widget_dependency_cache[ $widget_type ]['styles'] as $handle ) {
-			wp_enqueue_style( $handle );
+		foreach ( $this->widget_dependency_cache[ $cache_key ]['styles'] as $handle ) {
+			if ( ! empty( $handle ) ) {
+				wp_enqueue_style( $handle );
+			}
 		}
 
-		foreach ( $this->widget_dependency_cache[ $widget_type ]['scripts'] as $handle ) {
-			wp_enqueue_script( $handle );
+		foreach ( $this->widget_dependency_cache[ $cache_key ]['scripts'] as $handle ) {
+			if ( ! empty( $handle ) ) {
+				wp_enqueue_script( $handle );
+			}
 		}
 	}
 
@@ -183,12 +207,14 @@ class Nested_Document_Assets {
 		$cache_key = is_scalar( $menu ) ? (string) $menu : md5( wp_json_encode( $menu ) );
 
 		if ( ! isset( $this->nav_menu_items_cache[ $cache_key ] ) ) {
-			$this->nav_menu_items_cache[ $cache_key ] = (array) wp_get_nav_menu_items( $menu );
+			$menu_items = wp_get_nav_menu_items( $menu );
+			$this->nav_menu_items_cache[ $cache_key ] = is_array( $menu_items )
+				? array_filter( $menu_items, 'is_object' )
+				: array();
 		}
-
 		return $this->nav_menu_items_cache[ $cache_key ];
 	}
-
+	
 	/**
 	 * Resolve saved Widget Area and Mega Menu documents linked by the element tree.
 	 * @since 4.0.3

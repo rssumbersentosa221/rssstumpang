@@ -2,9 +2,9 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: ElementsKit Lite 4.0.3\n"
+"Project-Id-Version: ElementsKit Lite 4.0.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/elementskit-lite\n"
-"POT-Creation-Date: 2026-09-06 08:44:20+00:00\n"
+"POT-Creation-Date: 2026-09-09 07:04:39+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -662,7 +662,7 @@ msgstr ""
 
 #: libs/framework/views/onboard-steps/step-01.php:64
 #: libs/framework/views/onboard-steps/step-02.php:17
-#: libs/framework/views/onboard-steps/step-03.php:169
+#: libs/framework/views/onboard-steps/step-03.php:129
 #: libs/framework/views/onboard-steps/step-04.php:19
 #: libs/framework/views/onboard-steps/step-05.php:89
 msgid "Back"
@@ -708,45 +708,37 @@ msgstr ""
 msgid "A fleet of plugins with all types of features you will need for WordPress."
 msgstr ""
 
-#: libs/framework/views/onboard-steps/step-03.php:39
-msgid "Build and manage custom CPT fields for WordPress with AI and zero coding."
-msgstr ""
-
-#: libs/framework/views/onboard-steps/step-03.php:56
-msgid "Manage schedules, agents, and payments, all from one dashboard in WordPress."
-msgstr ""
-
-#: libs/framework/views/onboard-steps/step-03.php:73
+#: libs/framework/views/onboard-steps/step-03.php:33
 msgid "The ultimate solution to build a complete WooCommerce site in Elementor."
 msgstr ""
 
-#: libs/framework/views/onboard-steps/step-03.php:90
+#: libs/framework/views/onboard-steps/step-03.php:50
 msgid "Most flexible form builder for Elementor with a wide range of features."
 msgstr ""
 
-#: libs/framework/views/onboard-steps/step-03.php:108
+#: libs/framework/views/onboard-steps/step-03.php:68
 msgid ""
 "Enhance block capability with page builder features & templates for "
 "Gutenberg."
 msgstr ""
 
-#: libs/framework/views/onboard-steps/step-03.php:125 plugin.php:264
+#: libs/framework/views/onboard-steps/step-03.php:85 plugin.php:264
 msgid "Design popups that convert, right in your WordPress dashboard."
 msgstr ""
 
-#: libs/framework/views/onboard-steps/step-03.php:142
+#: libs/framework/views/onboard-steps/step-03.php:102
 msgid "Drag-and-drop email builder for WooCommerce & WordPress."
 msgstr ""
 
-#: libs/framework/views/onboard-steps/step-03.php:159
+#: libs/framework/views/onboard-steps/step-03.php:119
 msgid "Find top keywords, create winning content & track SEO results with AI."
 msgstr ""
 
-#: libs/framework/views/onboard-steps/step-03.php:172
+#: libs/framework/views/onboard-steps/step-03.php:132
 msgid "Continue"
 msgstr ""
 
-#: libs/framework/views/onboard-steps/step-03.php:179
+#: libs/framework/views/onboard-steps/step-03.php:139
 msgid "Unlock All & Continue"
 msgstr ""
 

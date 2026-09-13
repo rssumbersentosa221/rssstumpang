@@ -230,7 +230,7 @@ class ElementsKit_Widget_Social extends Widget_Base {
 				'type' => Controls_Manager::COLOR,
 				'default' => '#222222',
 				'selectors' => [
-					'{{WRAPPER}} {{CURRENT_ITEM}} > a i' => 'color: {{VALUE}}',
+					'{{WRAPPER}} {{CURRENT_ITEM}} > a' => 'color: {{VALUE}}',
 					'{{WRAPPER}} {{CURRENT_ITEM}} > a svg' => 'fill: {{VALUE}}',
 				],
 			]
