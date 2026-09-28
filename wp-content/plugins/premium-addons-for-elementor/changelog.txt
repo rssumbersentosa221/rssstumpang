@@ -1,5 +1,25 @@
 == Changelog ==
 
+= 4.11.108 - 24/9/2026 =
+
+- New: Added Generate Password button in MCP Config & AI Abilities tab to create the application password for your AI client in one click.
+- New: Added Manage Connections section in MCP Config & AI Abilities tab to view and revoke the application passwords and OAuth connections used by your AI clients.
+- Tweak: Premium Addons AI Abilities are now enabled automatically when Elementor MCP is turned on.
+
+= 4.11.107 - 23/9/2026 =
+
+- New: Added Connection check button in MCP Config & AI Abilities tab that reports what blocks an AI client from connecting.
+- Tweak: Premium Addons abilities now compatible with Elementor MCP.
+- Tweak: MCP Config & AI Abilities tab rebuilt for a better experience.
+- Tweak: Compatibility with Elementor v4.3.
+
+= 4.11.106 - 21/9/2026 =
+
+- Fixed: Mini Cart widget opening automatically for visitors who did not add anything to the cart when Open on Cart Update option is enabled.
+- Fixed: Mini Cart widget not opening after a product is added to the cart when Open on Cart Update option is enabled.
+- Fixed: Masonry layout not working in Elementor editor on Chrome in Media Grid, Blog, Testimonials, Pinterest Feed and TikTok Feed widgets.
+- Fixed: Improved code security enforcement in Video Box, Lottie Animations, Bullet List, Mega Menu and Woo CTA widgets, and in Premium Templates library.
+
 = 4.11.105 - 15/9/2026 =
 
 - Fixed: SVG icons losing their colors and styles when the SVG file keeps its CSS inside a style tag.

@@ -6,6 +6,7 @@
 namespace PremiumAddons\Admin\Includes;
 
 use PremiumAddons\Includes\Abilities\Bootstrap;
+use PremiumAddons\Includes\Abilities\Connection_Log;
 use PremiumAddons\Includes\Abilities\OAuth;
 use PremiumAddons\Includes\Helper_Functions;
 use PremiumAddons\Includes\Assets_Manager;
@@ -120,8 +121,9 @@ class Admin_Helper {
 		add_action( 'wp_ajax_pa_save_additional_settings', array( $this, 'pa_save_additional_settings' ) );
 		add_action( 'wp_ajax_pa_save_ai_abilities', array( $this, 'pa_save_ai_abilities' ) );
 		add_action( 'wp_ajax_pa_mcp_news_seen', array( $this, 'pa_mcp_news_seen' ) );
+		add_action( 'wp_ajax_pa_mcp_connection_check', array( $this, 'pa_mcp_connection_check' ) );
+		add_action( 'wp_ajax_pa_mcp_revoke_connection', array( $this, 'pa_mcp_revoke_connection' ) );
 		add_action( 'wp_ajax_pa_enable_oauth_connect', array( $this, 'pa_enable_oauth_connect' ) );
-		add_action( 'wp_ajax_pa_disable_oauth_connect', array( $this, 'pa_disable_oauth_connect' ) );
 		add_action( 'wp_ajax_pa_extend_oauth_window', array( $this, 'pa_extend_oauth_window' ) );
 		add_action( 'wp_ajax_pa_scan_widgets_usage', array( $this, 'pa_scan_widgets_usage' ) );
 		add_action( 'wp_ajax_pa_disable_unused_widgets', array( $this, 'pa_disable_unused_widgets' ) );
@@ -352,6 +354,10 @@ class Admin_Helper {
 						'aiAbilitiesSaveFailed' => __( 'AI ability settings could not be saved.', 'premium-addons-for-elementor' ),
 						'oauthEnabling'         => __( 'Enabling OAuth…', 'premium-addons-for-elementor' ),
 						'oauthRequestFailed'    => __( 'The request failed. Please try again.', 'premium-addons-for-elementor' ),
+						'checkRunning'          => __( 'Checking…', 'premium-addons-for-elementor' ),
+						'revokeConfirm'         => __( 'Revoke this connection? The client stops working right away.', 'premium-addons-for-elementor' ),
+						'revoking'              => __( 'Revoking…', 'premium-addons-for-elementor' ),
+						'revokeFailed'          => __( 'The connection could not be revoked. Please try again.', 'premium-addons-for-elementor' ),
 						'unusedButton'          => __( 'Scan & Disable Unused Widgets', 'premium-addons-for-elementor' ),
 						'unusedScanning'        => __( 'Scanning your site…', 'premium-addons-for-elementor' ),
 						'unusedFailed'          => __( 'Scan Failed', 'premium-addons-for-elementor' ),
@@ -800,7 +806,7 @@ class Admin_Helper {
 			// Unread MCP news dot. Computed from the cached feed only — the menu
 			// renders on every admin page, so it must never trigger a remote fetch.
 			// Inline-styled because admin.css loads only on PA screens.
-			if ( 'ai-abilities' === $key && MCP_News::has_unread() ) {
+			if ( 'ai-abilities' === $key && MCP_News::ENABLED && MCP_News::has_unread() ) {
 				$menu_title .= '<span class="pa-mcp-news-dot" style="display:inline-block;width:8px;height:8px;margin-inline-start:6px;vertical-align:middle;border-radius:50%;background:#d63638;"></span>';
 			}
 
@@ -972,6 +978,30 @@ class Admin_Helper {
 	}
 
 	/**
+	 * Gets the license tier. PAPRO without a valid license counts as free.
+	 *
+	 * @since 4.11.106
+	 * @access public
+	 *
+	 * @return string 'free' | 'pro' | 'lifetime'.
+	 */
+	public static function get_license_tier() {
+
+		if ( ! Helper_Functions::check_papro_version() ) {
+			return 'free';
+		}
+
+		$info = get_transient( 'pa_license_info' );
+
+		if ( ! is_array( $info ) || empty( $info['status'] ) || 'valid' !== $info['status'] ) {
+			return 'free';
+		}
+
+		// Plan id 4 is the only lifetime plan.
+		return ( isset( $info['id'] ) && '4' === (string) $info['id'] ) ? 'lifetime' : 'pro';
+	}
+
+	/**
 	 * Retrieves banner strings.
 	 *
 	 * @access public
@@ -979,17 +1009,18 @@ class Admin_Helper {
 	 */
 	public function get_banner_strings() {
 
-		$license_info = get_transient( 'pa_license_info' );
+		$tier = self::get_license_tier();
 
-		if ( ! Helper_Functions::check_papro_version() || ! $license_info ) {
+		if ( 'free' === $tier ) {
 			return array(
 				'title' => __( 'Summer SALE 2026', 'premium-addons-for-elementor' ),
 				'desc'  => __( 'Supercharge your Elementor with PRO Widgets & Addons that you won\'t find anywhere else.', 'premium-addons-for-elementor' ) . '<span class="papro-sale-notice">' . __( 'save up to 30%!', 'premium-addons-for-elementor' ) . '</span>',
 				'btn'   => __( 'Get Pro', 'premium-addons-for-elementor' ),
 				'cta'   => 'https://premiumaddons.com/get/papro/#get-pa-pro',
 			);
+		}
 
-		} if ( isset( $license_info['id'] ) && '4' !== $license_info['id'] ) {
+		if ( 'pro' === $tier ) {
 
 			$upgrade_link = Helper_Functions::get_campaign_link( 'http://premiumaddons.com/docs/upgrade-premium-addons-license/', 'dashboard-banner', 'wp-dash', 'upgrade-pro' );
 
@@ -999,8 +1030,9 @@ class Admin_Helper {
 				'btn'   => __( 'Upgrade Now', 'premium-addons-for-elementor' ),
 				'cta'   => $upgrade_link,
 			);
-
 		}
+
+		return null;
 	}
 
 	/**
@@ -1342,6 +1374,105 @@ class Admin_Helper {
 	}
 
 	/**
+	 * Run the MCP connection check and return its rows. Nothing is cached:
+	 * every click runs the checks again.
+	 *
+	 * @since 4.11.107
+	 * @return void
+	 */
+	public function pa_mcp_connection_check() {
+
+		check_ajax_referer( 'pa-settings-tab', 'security' );
+
+		if ( ! self::check_user_can( 'manage_options' ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'You are not allowed to do this action.', 'premium-addons-for-elementor' ),
+				),
+				403
+			);
+		}
+
+		wp_send_json_success( array( 'rows' => MCP_Settings::run_connection_check() ) );
+	}
+
+	/**
+	 * Revoke one of the current user's Premium Addons MCP connections. The row
+	 * must be in that user's own list, which is the ownership check.
+	 *
+	 * @since 4.11.108
+	 *
+	 * @return void
+	 */
+	public function pa_mcp_revoke_connection() {
+
+		check_ajax_referer( 'pa-settings-tab', 'security' );
+
+		if ( ! self::check_user_can( 'manage_options' ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'You are not allowed to do this action.', 'premium-addons-for-elementor' ),
+				),
+				403
+			);
+		}
+
+		$kind = isset( $_POST['kind'] ) ? sanitize_key( $_POST['kind'] ) : '';
+		$id   = isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '';
+
+		if ( ! in_array( $kind, array( 'password', 'oauth' ), true ) || '' === $id ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Invalid connection.', 'premium-addons-for-elementor' ),
+				),
+				400
+			);
+		}
+
+		$user_id    = get_current_user_id();
+		$connection = wp_list_filter(
+			Connection_Log::get_connections( $user_id ),
+			array(
+				'kind' => $kind,
+				'id'   => $id,
+			)
+		);
+
+		if ( empty( $connection ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'That connection no longer exists. Reload the page.', 'premium-addons-for-elementor' ),
+				),
+				404
+			);
+		}
+
+		$revoked = 'password' === $kind
+			? true === \WP_Application_Passwords::delete_application_password( $user_id, $id )
+			: OAuth\Store::revoke_token( (int) $id );
+
+		if ( ! $revoked ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'The connection could not be revoked. Try again.', 'premium-addons-for-elementor' ),
+				),
+				500
+			);
+		}
+
+		// The wp_delete_application_password hook runs this too, but only while
+		// the abilities feature is on, and OAuth has no core hook at all.
+		Connection_Log::forget( $user_id );
+
+		wp_send_json_success(
+			array(
+				'remaining' => count( Connection_Log::get_connections( $user_id ) ),
+				'connected' => Connection_Log::is_connected(),
+			)
+		);
+	}
+
+	/**
 	 * Enable the OAuth connect method: install the tables, set the flag, and
 	 * verify anonymous REST is actually reachable.
 	 *
@@ -1438,38 +1569,6 @@ class Admin_Helper {
 		OAuth\Bootstrap::open_registration_window();
 
 		wp_send_json_success();
-	}
-
-	/**
-	 * Disable the OAuth connect method — the kill switch. Deletes every issued
-	 * token; tables and client registrations survive so re-enabling does not
-	 * force clients to re-register.
-	 *
-	 * @since 4.11.90
-	 * @return void
-	 */
-	public function pa_disable_oauth_connect() {
-
-		check_ajax_referer( 'pa-settings-tab', 'security' );
-
-		if ( ! self::check_user_can( 'manage_options' ) ) {
-			wp_send_json_error(
-				array(
-					'message' => __( 'You are not allowed to do this action.', 'premium-addons-for-elementor' ),
-				)
-			);
-		}
-
-		delete_option( OAuth\Bootstrap::OPTION_ENABLED );
-		OAuth\Store::revoke_all_tokens();
-		wp_clear_scheduled_hook( OAuth\Bootstrap::CRON_HOOK );
-		OAuth\Bootstrap::flush_page_caches();
-
-		wp_send_json_success(
-			array(
-				'message' => __( 'OAuth disabled. Every connected client has been disconnected.', 'premium-addons-for-elementor' ),
-			)
-		);
 	}
 
 	/**

@@ -2,9 +2,9 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: ElementsKit Lite 4.0.5\n"
+"Project-Id-Version: ElementsKit Lite 4.0.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/elementskit-lite\n"
-"POT-Creation-Date: 2026-09-09 07:04:39+00:00\n"
+"POT-Creation-Date: 2026-09-21 06:39:55+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -92,7 +92,7 @@ msgstr ""
 #: modules/megamenu/views/options-menu-item.php:15
 #: widgets/business-hours/business-hours.php:153
 #: widgets/header-offcanvas/header-offcanvas.php:236
-#: widgets/init/enqueue-scripts.php:124 widgets/team/team.php:2563
+#: widgets/init/enqueue-scripts.php:134 widgets/team/team.php:2563
 msgid "Close"
 msgstr ""
 
@@ -1021,13 +1021,13 @@ msgstr ""
 #: libs/framework/views/settings-sections/usersettings.php:102
 #: libs/framework/views/settings-sections/usersettings.php:170
 #: libs/framework/views/settings-sections/usersettings.php:376
-#: libs/framework/views/settings-sections/usersettings.php:518
+#: libs/framework/views/settings-sections/usersettings.php:495
 msgid "Clear Cache"
 msgstr ""
 
 #: libs/framework/views/settings-sections/usersettings.php:108
 #: libs/framework/views/settings-sections/usersettings.php:152
-#: libs/framework/views/settings-sections/usersettings.php:523
+#: libs/framework/views/settings-sections/usersettings.php:500
 msgid "Check Token Generation Guide"
 msgstr ""
 
@@ -1154,7 +1154,7 @@ msgid "Twitter Username"
 msgstr ""
 
 #: libs/framework/views/settings-sections/usersettings.php:423
-#: libs/framework/views/settings-sections/usersettings.php:484
+#: libs/framework/views/settings-sections/usersettings.php:482
 msgid "Access Token"
 msgstr ""
 
@@ -1166,119 +1166,107 @@ msgstr ""
 msgid "Instragram User Data"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:474
+#: libs/framework/views/settings-sections/usersettings.php:472
 msgid "User ID"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:494
-msgid "Token Expiry Time"
-msgstr ""
-
-#: libs/framework/views/settings-sections/usersettings.php:504
-msgid "Token generation date"
-msgstr ""
-
-#: libs/framework/views/settings-sections/usersettings.php:507
-msgid "This is need to calculate the remaining time for token"
-msgstr ""
-
-#: libs/framework/views/settings-sections/usersettings.php:544
+#: libs/framework/views/settings-sections/usersettings.php:521
 msgid "Zoom Data"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:558
+#: libs/framework/views/settings-sections/usersettings.php:535
 msgid "Account ID"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:568
+#: libs/framework/views/settings-sections/usersettings.php:545
 msgid "Client ID"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:578
+#: libs/framework/views/settings-sections/usersettings.php:555
 msgid "Client Secret"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:588
+#: libs/framework/views/settings-sections/usersettings.php:565
 msgid "Api key"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:598
+#: libs/framework/views/settings-sections/usersettings.php:575
 msgid "Secret Key"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:609
+#: libs/framework/views/settings-sections/usersettings.php:586
 msgid "Check connection"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:631
+#: libs/framework/views/settings-sections/usersettings.php:608
 msgid "Google Map"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:644
+#: libs/framework/views/settings-sections/usersettings.php:621
 msgid "Api Key"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:665
+#: libs/framework/views/settings-sections/usersettings.php:642
 msgid "Google Sheet For Elementor Pro Form"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:679
+#: libs/framework/views/settings-sections/usersettings.php:656
 msgid "Google Client Id"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:686
+#: libs/framework/views/settings-sections/usersettings.php:663
 msgid "Google Client Secret"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:697
+#: libs/framework/views/settings-sections/usersettings.php:674
 #: widgets/image-accordion/image-accordion.php:325
 #: widgets/nav-menu/nav-menu.php:106 widgets/tab/tab.php:351
 msgid "Click"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:699
+#: libs/framework/views/settings-sections/usersettings.php:676
 msgid "and create App/Project On Google developer account"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:702
+#: libs/framework/views/settings-sections/usersettings.php:679
 msgid "Must add the following URL to the \"Valid OAuth redirect URIs\" field:"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:703
+#: libs/framework/views/settings-sections/usersettings.php:680
 msgid "After getting the App ID & App Secret, put those information"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:704
+#: libs/framework/views/settings-sections/usersettings.php:681
 msgid "Click on \"Save Changes\""
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:705
+#: libs/framework/views/settings-sections/usersettings.php:682
 msgid "Click on \"Generate Access Token\""
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:712
+#: libs/framework/views/settings-sections/usersettings.php:689
 msgid ""
 "Note:- After 200 days your token will be expired, before the expiration of "
 "your token,"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:712
+#: libs/framework/views/settings-sections/usersettings.php:689
 msgid "Generate a new access Token"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:715
+#: libs/framework/views/settings-sections/usersettings.php:692
 msgid "Generate Access Token"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:733
+#: libs/framework/views/settings-sections/usersettings.php:710
 msgid "Inline SVG"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:747
+#: libs/framework/views/settings-sections/usersettings.php:724
 msgid "Enable SVG Icon"
 msgstr ""
 
-#: libs/framework/views/settings-sections/usersettings.php:756
+#: libs/framework/views/settings-sections/usersettings.php:733
 msgid ""
 "This is an experimental feature that you may try out. If you encounter any "
 "issues with Elementskit icons, simply disable this feature."
@@ -2555,7 +2543,7 @@ msgstr ""
 msgid "These settings could not be saved. Please reload the page and try again."
 msgstr ""
 
-#: modules/megamenu/walker-nav-menu.php:354
+#: modules/megamenu/walker-nav-menu.php:377
 msgid "No content found"
 msgstr ""
 
@@ -6222,7 +6210,7 @@ msgid "Open menu"
 msgstr ""
 
 #: widgets/header-offcanvas/header-offcanvas.php:896
-#: widgets/nav-menu/nav-menu.php:1709
+#: widgets/nav-menu/nav-menu.php:1692 widgets/nav-menu/nav-menu.php:1714
 msgid "Menu"
 msgstr ""
 
@@ -6956,27 +6944,27 @@ msgstr ""
 msgid "Image comparison slider"
 msgstr ""
 
-#: widgets/init/enqueue-scripts.php:123 widgets/video/video.php:2136
+#: widgets/init/enqueue-scripts.php:133 widgets/video/video.php:2136
 msgid "Video player"
 msgstr ""
 
-#: widgets/init/enqueue-scripts.php:129
+#: widgets/init/enqueue-scripts.php:139
 msgid "Previous slide"
 msgstr ""
 
-#: widgets/init/enqueue-scripts.php:130
+#: widgets/init/enqueue-scripts.php:140
 msgid "Next slide"
 msgstr ""
 
-#: widgets/init/enqueue-scripts.php:131
+#: widgets/init/enqueue-scripts.php:141
 msgid "This is the first slide"
 msgstr ""
 
-#: widgets/init/enqueue-scripts.php:132
+#: widgets/init/enqueue-scripts.php:142
 msgid "This is the last slide"
 msgstr ""
 
-#: widgets/init/enqueue-scripts.php:134
+#: widgets/init/enqueue-scripts.php:144
 #. translators: {{index}} is replaced by Swiper with the slide number. Keep it
 #. as-is.
 msgid "Go to slide {{index}}"

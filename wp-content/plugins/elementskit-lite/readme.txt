@@ -4,7 +4,7 @@ Tags: Elementor addons, mega menu builder,  header footer builder, elementor add
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.0.5
+Stable tag: 4.0.6
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -357,6 +357,13 @@ ElementsKit is brought to you by Wpmet, a name **trusted by 10,00,000 satisfied 
 Visit  [wpmet](https://wpmet.com/?utm_source=org&utm_medium=readme) for essential WordPress [Tutorials, Tips & Tricks](https://wpmet.com/blog)!
 
 == Changelog ==
+= ElementsKit Elementor Addons Version: 4.0.6 (2026-09-21) =
+* Added: Support for Elementor Atomic Elements.
+* Added: Blog Post image widget image position control responisve
+* Improved: Output escaping for media image attributes to enhance security.
+* Fixed: Mega Menu rendering issues in the Elementor editor.
+* Fixed: A stored XSS vulnerability in the Nav Menu widget’s mobile logo image attributes.
+
 = ElementsKit Elementor Addons Version: 4.0.5 (2026-09-09) =
 * Improved: Compatibility with the latest version of WPML.
 * Fixed: PHP warning caused by invalid Nav Menu item references during Mega Menu asset discovery.

