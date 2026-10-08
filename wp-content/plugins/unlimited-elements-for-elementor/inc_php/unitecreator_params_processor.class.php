@@ -192,6 +192,8 @@ class UniteCreatorParamsProcessorWork{
 		$options = $this->checkModifyParamOptions_manual($options, $phpFilter);
 
 		//general modify
+		$options = apply_filters("uelm_modify_dropdown_" . $phpFilter, $options);
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 		$options = apply_filters("ue_modify_dropdown_" . $phpFilter, $options);
 
 		if(empty($options) === true)
@@ -1131,13 +1133,13 @@ class UniteCreatorParamsProcessorWork{
 		}
 
 		//value is the icon name
-		$html = "<i class='{$value}'></i>";
+		$html = "<i class='" . esc_attr($value) . "'></i>";
 		if($isSVG == true){
 
 			if(!empty($svgContent))
 				$html = $svgContent;
 			else
-				$html ="<img src='$value' class='uc-svg-image'>";
+				$html = "<img src='" . esc_url($value) . "' class='uc-svg-image'>";
 		}
 
 		$data[$name."_html"] = $html;
@@ -1201,7 +1203,7 @@ class UniteCreatorParamsProcessorWork{
 
 		$filepathPickerObject = GlobalsUC::$pathViewsObjects."mappicker_view.class.php";
 		require_once $filepathPickerObject;
-		$objView = new UniteCreatorMappickerView();
+		$objView = new UELM_CreatorMappickerView();
 
 		if(!empty($value))
 			$objView->setData($value);
@@ -1415,6 +1417,8 @@ class UniteCreatorParamsProcessorWork{
 
 			$type = UniteFunctionsUC::getVal($param, "type");
 
+			$param = apply_filters("uelm_unite_creator_process_param_for_output", $param);
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 			$param = apply_filters("unite_creator_process_param_for_output", $param);
 
 			if(isset($param["value"]))
@@ -1656,7 +1660,7 @@ class UniteCreatorParamsProcessorWork{
 		$customAttributes = $this->getLinkData_prepareAttributes($customAttributes);
 
 		$urlFull = $url;
-		$scheme = parse_url($url, PHP_URL_SCHEME);
+		$scheme = wp_parse_url($url, PHP_URL_SCHEME);
 
 		if(empty($scheme) === true){
 			$urlFull = "https://{$url}";

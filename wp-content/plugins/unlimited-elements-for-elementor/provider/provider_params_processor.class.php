@@ -453,6 +453,46 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 
 
 	/**
+	 * function names from general settings, one per line
+	 */
+	private function getPostListData_getAllowedPHPFunctions(){
+
+		if(class_exists("HelperProviderCoreUC_EL") == false)
+			return(array());
+
+		try{
+			$raw = HelperProviderCoreUC_EL::getGeneralSetting("posts_php_functions");
+		}catch(Exception $e){
+			return(array());
+		}
+
+		if(is_string($raw) == false || trim($raw) === "")
+			return(array());
+
+		$lines = preg_split('/[\r\n,]+/', $raw);
+		$names = array();
+
+		if(is_array($lines) == false)
+			return(array());
+
+		foreach($lines as $line){
+
+			$line = trim($line);
+
+			if($line === "")
+				continue;
+
+			if(preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $line) !== 1)
+				continue;
+
+			$names[] = $line;
+		}
+
+		return($names);
+	}
+
+
+	/**
 	 * get post ids from php function
 	 */
 	private function getPostListData_getIDsFromPHPFunction($value, $name, $showDebugQuery){
@@ -471,6 +511,13 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 
 		if(is_string($functionName) == false)
 			return(false);
+
+		$functionName = trim($functionName);
+
+		$allowed = $this->getPostListData_getAllowedPHPFunctions();
+
+		if(in_array($functionName, $allowed, true) == false)
+			return(null);
 
 		if(strpos($functionName, "get") !== 0){
 
@@ -586,6 +633,7 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 			$mainCategoryID = UniteFunctionsUC::getVal($arrMeta, "rank_math_primary_category");
 
 		if (!empty($mainCategoryID)) {
+	    	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- External hook from WordPress or another plugin.
 	    	$mainCategoryID = apply_filters('wpml_object_id', $mainCategoryID, 'category', true);
 	    }		
 			
@@ -960,6 +1008,8 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 			return($arrData);
 		}
 				
+		$arrData = apply_filters("uelm_modify_post_data", $arrData);
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 		$arrData = apply_filters("ue_modify_post_data", $arrData);
 		
 		return($arrData);
@@ -992,7 +1042,7 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 		$widgetData = $data;
 		unset($widgetData[$name]);
 
-		$args = apply_filters($queryID, $args, $widgetData);
+		$args = apply_filters($queryID, $args, $widgetData); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Filter name is entered in the widget settings and is passed through.
 
 		if($showDebugQuery == true){
 			dmp("args after custom query");
@@ -2053,7 +2103,7 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 
 					if(isset($_COOKIE["woocommerce_recently_viewed"])){
 
-						$strRecentProducts = $_COOKIE["woocommerce_recently_viewed"];
+						$strRecentProducts = sanitize_text_field(wp_unslash($_COOKIE["woocommerce_recently_viewed"]));
 						$strRecentProducts = trim($strRecentProducts);
 						$arrRecentProducts = explode("|", $strRecentProducts);
 						
@@ -2219,6 +2269,8 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 				break;
 				default:	//apply some filter for custom post id's
 					
+					$customPostINIDs = apply_filters("uelm_get_custom_includeby_postids", null, $includeby, $limit);
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 					$customPostINIDs = apply_filters("ue_get_custom_includeby_postids", null, $includeby, $limit);
 										
 				break;
@@ -2425,6 +2477,8 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 			
 			//for wpml integration
 			
+			do_action("uelm_before_get_only_sticky_posts",$value,$name);
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 			do_action("ue_before_get_only_sticky_posts",$value,$name);
 			
 			$arrStickyPosts = get_option('sticky_posts', array());
@@ -2451,9 +2505,7 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 
 		if($showDebugQuery == true){
 			
-			$style = HelperHtmlUC::getQueryDebugWrapperStyles();
-			
-			echo("<div class='uc-debug-query-wrapper' style='{$style}'>");	//start debug wrapper
+			HelperHtmlUC::putQueryDebugWrapperStart();	//start debug wrapper
 		}
 			
 		$args = $this->getPostListData_getPostGetFilters_pagination($args, $value, $name, $data, $param);
@@ -2552,11 +2604,15 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 
 		$query = new WP_Query();
 
+		do_action("uelm_before_custom_posts_query", $query);
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 		do_action("ue_before_custom_posts_query", $query);
 		
 		$args["cache_results"] = true;
 		$args["update_post_meta_cache"] = true;
 		
+		$args = apply_filters("uelm_modify_posts_query_args", $args, $value, $name);
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 		$args = apply_filters("ue_modify_posts_query_args", $args, $value, $name);
 
 		//set debug errors
@@ -2606,6 +2662,8 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 
 		$objFiltersProcess->afterQueryRun();
 		
+		do_action("uelm_after_custom_posts_query", $query);
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 		do_action("ue_after_custom_posts_query", $query);
 		
 		//custom posts debug
@@ -2999,6 +3057,8 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 			$this->advancedQueryDebug = true;
 		}
 		
+		$args = apply_filters("uelm_modify_posts_query_args", $currentQueryVars, $value, $name);
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 		$args = apply_filters("ue_modify_posts_query_args", $currentQueryVars, $value, $name);
 		
 		
@@ -3008,10 +3068,8 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 			$postType = UniteFunctionsUC::getVal($currentQueryVars, "post_type");
 			if($postType == "product")
 				$isForWoo = true;
-			
-			$style = HelperHtmlUC::getQueryDebugWrapperStyles();
-			
-			echo "<div class='uc-debug-query-wrapper' style='{$style}'>";	//start debug wrapper
+
+			HelperHtmlUC::putQueryDebugWrapperStart();	//start debug wrapper
 
 			dmp("Current Posts. The Query Is:");
 
@@ -3324,9 +3382,7 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 
 			if($showDebugQuery == true){
 				
-				$style = HelperHtmlUC::getQueryDebugWrapperStyles();
-				
-				echo "<div class='uc-debug-query-wrapper' style='{$style}'>";	//start debug wrapper
+				HelperHtmlUC::putQueryDebugWrapperStart();	//start debug wrapper
 				
 				dmp("UE Templates. No template id's found, no query");
 
@@ -3354,9 +3410,7 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 
 		if($showDebugQuery == true){
 
-			$style = HelperHtmlUC::getQueryDebugWrapperStyles();
-			
-			echo "<div class='uc-debug-query-wrapper' style='{$style}'>";	//start debug wrapper
+			HelperHtmlUC::putQueryDebugWrapperStart();	//start debug wrapper
 
 			dmp("UE Templates. The Query Is:");
 
@@ -3778,7 +3832,7 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 			$title = UniteFunctionsUC::getVal($data, $name."_alt");
 
 		if(empty($title) && !empty($urlImage)){
-			$filename = basename(parse_url($urlImage, PHP_URL_PATH));
+			$filename = basename(wp_parse_url($urlImage, PHP_URL_PATH));
 			$filename = preg_replace('/\.[^.]+$/', '', $filename);
 			if(!empty($filename))
 				$title = str_replace(array("-", "_"), " ", $filename);
@@ -5496,6 +5550,7 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 			}
 			
 			$placeholders = implode(", ", array_fill(0, count($arrValidPostTypes), "%s"));
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- dynamic IN() placeholders
 			$post_types_in = $wpdb->prepare($placeholders, $arrValidPostTypes);
 
 			$clauses['where'] .= "
@@ -5547,11 +5602,16 @@ class UniteCreatorParamsProcessor extends UniteCreatorParamsProcessorWork{
 	 */
 	public function getDirectChildrenOfSelectedTerms($clauses) {
 
+		remove_filter('terms_clauses', array($this, "getDirectChildrenOfSelectedTerms"), 1, 1);
+
+		if(empty($this->arrIncludeDirectChildrenOfSelectedTermsIDs))
+			return $clauses;
+
 		$termsIDs = implode(', ', $this->arrIncludeDirectChildrenOfSelectedTermsIDs);
 
-		$clauses['where'] .= " AND tt.parent IN (" . $termsIDs . ")";
+		UniteFunctionsUC::validateIDsList($termsIDs, "parent terms id's");
 
-		remove_filter('terms_clauses', array($this, "getDirectChildrenOfSelectedTerms"), 1, 1);
+		$clauses['where'] .= " AND tt.parent IN (" . $termsIDs . ")";
 
 		return $clauses;
 	}

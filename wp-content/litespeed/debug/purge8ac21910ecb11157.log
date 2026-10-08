@@ -9086,3 +9086,97 @@
 09/28/26 09:09:01.888 [172.12.12.11:50116 1 0gX] X-LSCACHE: false
 09/28/26 09:09:01.888 [172.12.12.11:50116 1 0gX] X-LiteSpeed-Purge: private,* => LiteSpeed\LSC->send_headers()@626 => WP_Hook->apply_filters(ARRAY)@353 => WP_Hook->do_action(ARRAY)@377 => 
 /var/www/html/rssstumpang/wp-includes/load.php@523
+
+
+
+
+10/08/26 08:54:33.829 [160.19.19.158:54583 1 giZ] 💓 ------POST HTTP/1.1 (HTTPS)  /wp-login.php
+10/08/26 08:54:33.829 [160.19.19.158:54583 1 giZ] Query String: 
+10/08/26 08:54:33.829 [160.19.19.158:54583 1 giZ] HTTP_REFERER: https://rssstumpang.com/wp-login.php?loggedout=true&w...
+10/08/26 08:54:33.829 [160.19.19.158:54583 1 giZ] User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit...
+10/08/26 08:54:33.829 [160.19.19.158:54583 1 giZ] Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+10/08/26 08:54:33.829 [160.19.19.158:54583 1 giZ] Accept Encoding: gzip, deflate, br, zstd
+10/08/26 08:54:33.829 [160.19.19.158:54583 1 giZ] Cookie _lscache_vary: guest_mode:1
+10/08/26 08:54:33.829 [160.19.19.158:54583 1 giZ] X-LSCACHE: false
+10/08/26 08:54:33.829 [160.19.19.158:54583 1 giZ] X-LiteSpeed-Purge: private,* => LiteSpeed\LSC->send_headers()@626 => WP_Hook->apply_filters(ARRAY)@353 => WP_Hook->do_action(ARRAY)@377 => 
+/var/www/html/rssstumpang/wp-includes/load.php@523
+
+
+
+
+10/08/26 08:56:41.721 [160.19.19.158:56472 1 ivM] 💓 ------POST HTTP/1.1 (HTTPS)  /wp-admin/update-core.php
+10/08/26 08:56:41.721 [160.19.19.158:56472 1 ivM] Query String: action=do-plugin-upgrade
+10/08/26 08:56:41.721 [160.19.19.158:56472 1 ivM] HTTP_REFERER: https://rssstumpang.com/wp-admin/update-core.php
+10/08/26 08:56:41.721 [160.19.19.158:56472 1 ivM] User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit...
+10/08/26 08:56:41.721 [160.19.19.158:56472 1 ivM] Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+10/08/26 08:56:41.721 [160.19.19.158:56472 1 ivM] Accept Encoding: gzip, deflate, br, zstd
+10/08/26 08:56:41.721 [160.19.19.158:56472 1 ivM] Cookie _lscache_vary: admin_bar:1;guest_mode:1;logged-in:1;role:99
+10/08/26 08:56:41.721 [160.19.19.158:56472 1 ivM] X-LSCACHE: false
+10/08/26 08:56:41.721 [160.19.19.158:56472 1 ivM] X-LiteSpeed-Purge: public,stale,4b5_ => LiteSpeed\LSC->send_headers()@626 => WP_Hook->apply_filters(ARRAY)@353 => WP_Hook->do_action(ARRAY)@377 => 
+/var/www/html/rssstumpang/wp-includes/load.php@523
+
+
+
+
+10/08/26 09:02:51.342 [167.99.186.129:52832 1 QZN] 💓 ------POST HTTP/1.1 (HTTPS)  /wp-login.php
+10/08/26 09:02:51.342 [167.99.186.129:52832 1 QZN] Query String: 
+10/08/26 09:02:51.342 [167.99.186.129:52832 1 QZN] User Agent: Mozilla/5.0
+10/08/26 09:02:51.342 [167.99.186.129:52832 1 QZN] Accept: */*
+10/08/26 09:02:51.342 [167.99.186.129:52832 1 QZN] Accept Encoding: 
+10/08/26 09:02:51.342 [167.99.186.129:52832 1 QZN] X-LSCACHE: false
+10/08/26 09:02:51.342 [167.99.186.129:52832 1 QZN] X-LiteSpeed-Purge: public,stale,4b5_ => LiteSpeed\LSC->send_headers()@626 => WP_Hook->apply_filters(ARRAY)@353 => WP_Hook->do_action(ARRAY)@377 => 
+/var/www/html/rssstumpang/wp-includes/load.php@523
+
+
+
+
+10/08/26 09:03:09.209 [127.0.0.1:60334 1 sby] 💓 ------POST HTTP/1.1 (HTTPS)  /wp-cron.php
+10/08/26 09:03:09.209 [127.0.0.1:60334 1 sby] Query String: doing_wp_cron=1791424988.5007688999176025390625
+10/08/26 09:03:09.209 [127.0.0.1:60334 1 sby] User Agent: WordPress/7.1.3; https://rssstumpang.com
+10/08/26 09:03:09.209 [127.0.0.1:60334 1 sby] Accept: */*
+10/08/26 09:03:09.209 [127.0.0.1:60334 1 sby] Accept Encoding: deflate, gzip, br, zstd
+10/08/26 09:03:09.209 [127.0.0.1:60334 1 sby] X-LSCACHE: false
+10/08/26 09:03:09.209 [127.0.0.1:60334 1 sby] X-LiteSpeed-Purge: public,stale,4b5_ => LiteSpeed\LSC->send_headers()@626 => WP_Hook->apply_filters(ARRAY)@353 => WP_Hook->do_action(ARRAY)@377 => 
+/var/www/html/rssstumpang/wp-includes/load.php@523
+
+
+
+
+10/08/26 09:09:13.658 [160.19.19.158:63263 1 ubV] 💓 ------GET HTTP/1.1 (HTTPS)  /wp-admin/plugin-install.php
+10/08/26 09:09:13.658 [160.19.19.158:63263 1 ubV] Query String: 
+10/08/26 09:09:13.658 [160.19.19.158:63263 1 ubV] HTTP_REFERER: https://rssstumpang.com/wp-admin/update.php?action=up...
+10/08/26 09:09:13.658 [160.19.19.158:63263 1 ubV] User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit...
+10/08/26 09:09:13.658 [160.19.19.158:63263 1 ubV] Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+10/08/26 09:09:13.658 [160.19.19.158:63263 1 ubV] Accept Encoding: gzip, deflate, br, zstd
+10/08/26 09:09:13.658 [160.19.19.158:63263 1 ubV] Cookie _lscache_vary: admin_bar:1;guest_mode:1;logged-in:1;role:99
+10/08/26 09:09:13.658 [160.19.19.158:63263 1 ubV] X-LSCACHE: false
+10/08/26 09:09:13.658 [160.19.19.158:63263 1 ubV] X-LiteSpeed-Purge: public,stale,4b5_ => LiteSpeed\LSC->send_headers()@626 => WP_Hook->apply_filters(ARRAY)@353 => WP_Hook->do_action(ARRAY)@377 => 
+/var/www/html/rssstumpang/wp-includes/load.php@523
+
+
+
+
+10/08/26 09:09:39.036 [160.19.19.158:19612 1 dyV] 💓 ------GET HTTP/1.1 (HTTPS)  /wp-admin/update.php
+10/08/26 09:09:39.036 [160.19.19.158:19612 1 dyV] Query String: action=upload-plugin-cancel-overwrite&package=3689&_wpnonce=b0c5b2c3f7
+10/08/26 09:09:39.036 [160.19.19.158:19612 1 dyV] HTTP_REFERER: https://rssstumpang.com/wp-admin/update.php?action=up...
+10/08/26 09:09:39.036 [160.19.19.158:19612 1 dyV] User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit...
+10/08/26 09:09:39.036 [160.19.19.158:19612 1 dyV] Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+10/08/26 09:09:39.036 [160.19.19.158:19612 1 dyV] Accept Encoding: gzip, deflate, br, zstd
+10/08/26 09:09:39.036 [160.19.19.158:19612 1 dyV] Cookie _lscache_vary: admin_bar:1;guest_mode:1;logged-in:1;role:99
+10/08/26 09:09:39.036 [160.19.19.158:19612 1 dyV] X-LSCACHE: false
+10/08/26 09:09:39.037 [160.19.19.158:19612 1 dyV] X-LiteSpeed-Purge: public,stale,4b5_Po.3689,4b5_W.recent-posts-1,4b5_FD,4b5_A.2,4b5_F,4b5_H,4b5_PGS,4b5_PGSRP,4b5_D.202610,4b5_REST => LiteSpeed\LSC->send_headers()@626 => WP_Hook->apply_filters(ARRAY)@353 => WP_Hook->do_action(ARRAY)@377 => 
+/var/www/html/rssstumpang/wp-includes/load.php@523
+
+
+
+
+10/08/26 09:15:33.063 [160.19.19.158:51314 1 k0F] 💓 ------GET HTTP/1.1 (HTTPS)  /wp-login.php
+10/08/26 09:15:33.063 [160.19.19.158:51314 1 k0F] Query String: action=logout&_wpnonce=b1553ba755
+10/08/26 09:15:33.063 [160.19.19.158:51314 1 k0F] HTTP_REFERER: https://rssstumpang.com/wp-admin/plugins.php
+10/08/26 09:15:33.063 [160.19.19.158:51314 1 k0F] User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit...
+10/08/26 09:15:33.063 [160.19.19.158:51314 1 k0F] Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+10/08/26 09:15:33.063 [160.19.19.158:51314 1 k0F] Accept Encoding: gzip, deflate, br, zstd
+10/08/26 09:15:33.063 [160.19.19.158:51314 1 k0F] Cookie _lscache_vary: admin_bar:1;guest_mode:1;logged-in:1;role:99
+10/08/26 09:15:33.063 [160.19.19.158:51314 1 k0F] X-LSCACHE: false
+10/08/26 09:15:33.063 [160.19.19.158:51314 1 k0F] X-LiteSpeed-Purge: private,* => LiteSpeed\LSC->send_headers()@626 => WP_Hook->apply_filters(ARRAY)@353 => WP_Hook->do_action(ARRAY)@377 => 
+/var/www/html/rssstumpang/wp-includes/load.php@523

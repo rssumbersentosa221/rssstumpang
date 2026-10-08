@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Big File Uploads
  * Description: Enable large file uploads in the built-in WordPress media uploader via multipart uploads, and set maximum upload file size to any value based on user role. Uploads can be as large as available disk space allows.
- * Version:     2.2.0
+ * Version:     2.2.2
  * Author:      Infinite Uploads
  * Author URI:  https://infiniteuploads.com/?utm_source=bfu_plugin&utm_medium=plugin&utm_campaign=bfu_plugin&utm_content=meta
  * Network:     true
@@ -26,7 +26,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright 2021-2025 ClikIT, LLC
+ * Copyright 2021-2026 ClikIT, LLC
  *
  * @package BigFileUploads
  * @version 2.0
@@ -36,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     die();
 }
 
-define( 'BIG_FILE_UPLOADS_VERSION', '2.2.0' );
+define( 'BIG_FILE_UPLOADS_VERSION', '2.2.2' );
 
 if ( ! defined( 'BIG_FILE_UPLOADS_PLUGIN_URL' ) ) {
     define( 'BIG_FILE_UPLOADS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -70,6 +70,13 @@ class BigFileUploads {
     public $server_root = 'https://infiniteuploads.com/';
     protected $capability;
     protected $max_upload_size;
+
+    /**
+     * The email summary.
+     *
+     * @var Big_File_Uploads_Email_Digest
+     */
+    public $digest;
     public $ajax_timelimit = 20;
 
     /**
@@ -104,6 +111,7 @@ class BigFileUploads {
         //save default before we filter it
         $this->max_upload_size = wp_max_upload_size();
         register_activation_hook( __FILE__, array( $this, 'on_plugin_activation' ) );
+        register_deactivation_hook( __FILE__, array( 'Big_File_Uploads_Email_Digest', 'unschedule' ) );
         add_action( 'init', array( $this, 'load_textdomain' ) );
         add_action( 'admin_notices', array( $this, 'init_review_notice' ) );
         add_filter( 'plupload_init', array( $this, 'filter_plupload_settings' ) );
@@ -147,6 +155,9 @@ class BigFileUploads {
         }
 
         require_once dirname( __FILE__ ) . '/classes/class-file-scan.php';
+        require_once dirname( __FILE__ ) . '/classes/class-email-digest.php';
+
+        $this->digest = new Big_File_Uploads_Email_Digest( $this );
 
         /**
          * Filters the capability that is checked for access to Big File Uploads settings page.
@@ -1821,9 +1832,20 @@ class BigFileUploads {
                 }
             }
 
+            $digest_changed = false;
+            if ( $this->digest->is_available() && isset( $_POST['digest'] ) ) {
+                $digest             = $this->digest->sanitize_frequency( sanitize_key( wp_unslash( $_POST['digest'] ) ) );
+                $digest_changed     = $digest !== $this->digest->get_frequency();
+                $settings['digest'] = $digest;
+            }
+
             if ( ! $save_error ) {
                 update_site_option( 'tuxbfu_settings', $settings );
                 $save_success = true;
+
+                if ( $digest_changed ) {
+                    $this->digest->reschedule();
+                }
             }
         }
         ?>
@@ -1897,9 +1919,12 @@ class BigFileUploads {
         require( dirname( __FILE__ ) . '/templates/footer.php' );
 
         if ( ! $this->is_infinite_uploads_active() ) {
+            // Read before the scan modal: its report questions are only asked while the subscribe
+            // modal will follow, since that form is the only place the answers are sent.
+            $dismissed = get_user_option( 'bfu_subscribe_notice_dismissed', get_current_user_id() );
+
             require( dirname( __FILE__ ) . '/templates/modal-scan.php' );
 
-            $dismissed = get_user_option( 'bfu_subscribe_notice_dismissed', get_current_user_id() );
             if ( ! $dismissed ) {
                 require( dirname( __FILE__ ) . '/templates/modal-subscribe.php' );
             }
@@ -2021,6 +2046,50 @@ class BigFileUploads {
         $data = compact( 'file_count', 'file_size', 'is_done', 'remaining_dirs' );
 
         wp_send_json_success( $data );
+    }
+
+    /**
+     * The "Personalize Your Report" questions asked before a scan, for email marketing.
+     *
+     * Nothing is stored. admin.js copies the answers into the subscribe form's hidden fields, one per
+     * merge_tag (each must exist in the Mailchimp audience), so they are only sent with a signup.
+     * Choice keys are the values Mailchimp receives, so they stay the same in every locale; the
+     * persona keys match the Infinite Uploads checkout's.
+     *
+     * @return array[] Keyed by question: label, merge_tag, and choices (value => label).
+     */
+    public function get_report_questions() {
+        $yes_no = array(
+            'yes' => __( 'Yes', 'tuxedo-big-file-uploads' ),
+            'no'  => __( 'No', 'tuxedo-big-file-uploads' ),
+        );
+
+        return array(
+            'persona' => array(
+                'label'     => __( 'What best describes you?', 'tuxedo-big-file-uploads' ),
+                'merge_tag' => 'PERSONA',
+                'choices'   => array(
+                    'digital_agency'   => __( 'Digital Agency', 'tuxedo-big-file-uploads' ),
+                    'content_creator'  => __( 'Content Creator', 'tuxedo-big-file-uploads' ),
+                    'hosting_provider' => __( 'Hosting Provider', 'tuxedo-big-file-uploads' ),
+                    'ecommerce_store'  => __( 'Ecommerce Store', 'tuxedo-big-file-uploads' ),
+                    'software_company' => __( 'Product/Software Company', 'tuxedo-big-file-uploads' ),
+                    'freelancer'       => __( 'Freelancer', 'tuxedo-big-file-uploads' ),
+                    'small_business'   => __( 'Small Business', 'tuxedo-big-file-uploads' ),
+                    'other'            => __( 'Other', 'tuxedo-big-file-uploads' ),
+                ),
+            ),
+            'folders' => array(
+                'label'     => __( 'Do you use a media folders plugin?', 'tuxedo-big-file-uploads' ),
+                'merge_tag' => 'FOLDERS',
+                'choices'   => $yes_no,
+            ),
+            'imgopt'  => array(
+                'label'     => __( 'Do you use an image optimization plugin?', 'tuxedo-big-file-uploads' ),
+                'merge_tag' => 'IMGOPT',
+                'choices'   => $yes_no,
+            ),
+        );
     }
 
     /**

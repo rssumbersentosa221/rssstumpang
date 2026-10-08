@@ -8,7 +8,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class UniteProviderFrontUC{
+class UELM_ProviderFront{
 	
 	private $t;
 	const ACTION_FOOTER_SCRIPTS = "wp_print_footer_scripts";
@@ -99,48 +99,16 @@ class UniteProviderFrontUC{
 			$isMultiple = UniteFunctionsUC::strToBool($isMultiple);
 			
 			if(!defined("DONOTCDN") && $isMultiple == false)
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Constant name read by CDN plugins.
 				define("DONOTCDN",true);
 		}
 		
 		//disable doubly
 		
 		if(!defined("DISABLE_DOUBLY"))		
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Constant name read by the Doubly plugin.
 			define("DISABLE_DOUBLY", true);
 	}
-	
-	/**
-	 * show debug post data if available
-	 */
-	public function onFooterDebugPostData(){
-		
-		$showMetaFields = HelperUC::hasPermissionsFromQuery("ucpostmetadebug");
-		
-		if(empty($showMetaFields))
-			return(false);
-		
-		$isSingle = is_singular();
-		
-		if($isSingle == true){
-			
-			HelperProviderUC::showCurrentPostObjectDebug();
-			
-			HelperProviderUC::showCurrentPostMetaDebug();
-			
-			HelperProviderUC::showCurrentPostTermsDebug();
-			
-			HelperProviderUC::showElementorDataDebug();
-
-			return(false);
-		}
-
-		//if not single - show the main query
-			
-		HelperProviderUC::showLastQuery();
-		
-		
-		
-	}
-	
 	
 	/**
 	 * on plugins loaded
@@ -169,6 +137,8 @@ class UniteProviderFrontUC{
 		
 		$this->t = $this;
 		
+		do_action("uelm_addon_library_before_front_init");
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 		do_action("addon_library_before_front_init");
 		
 		HelperProviderUC::globalInit();
@@ -185,8 +155,6 @@ class UniteProviderFrontUC{
 		$this->addFilter("template_include", "onTemplateInclude",12);	//after elementor and woo
 		
 		$this->addAction( 'plugins_loaded', 'onPluginsLoaded' );
-		
-		$this->addAction( 'wp_footer', 'onFooterDebugPostData' );
 		
 		$this->addAction( 'wp_footer', 'onFooterCheckShowSchema' );
 		
@@ -237,4 +205,5 @@ class UniteProviderFrontUC{
 		
 }
 
+class_alias( UELM_ProviderFront::class, 'UniteProviderFrontUC' );
 ?>

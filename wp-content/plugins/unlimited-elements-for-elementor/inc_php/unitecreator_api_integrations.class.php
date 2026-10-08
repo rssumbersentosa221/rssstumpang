@@ -468,7 +468,7 @@ class UniteCreatorAPIIntegrations{
 	private function authorizeGoogleService($service){
 		
 		try{
-			$service->setAccessToken(UEGoogleAPIHelper::getFreshAccessToken());
+			$service->setAccessToken(UELM_GoogleAPIHelper::getFreshAccessToken());
 		}catch(Exception $exception){
 			$this->authorizeGoogleServiceWithApiKey($service);
 		}
@@ -479,7 +479,7 @@ class UniteCreatorAPIIntegrations{
 	 */
 	private function authorizeGoogleServiceWithApiKey($service){
 
-		$service->setApiKey(UEGoogleAPIHelper::getApiKey());
+		$service->setApiKey(UELM_GoogleAPIHelper::getApiKey());
 	}
 
 	/**
@@ -488,11 +488,11 @@ class UniteCreatorAPIIntegrations{
 	private function hasGoogleCredentials(){
 		
 		try{
-			$token = UEGoogleAPIHelper::getFreshAccessToken();
+			$token = UELM_GoogleAPIHelper::getFreshAccessToken();
 
 			$hasCredentials = empty($token) === false;
 		}catch(Exception $exception){
-			$key = UEGoogleAPIHelper::getApiKey();
+			$key = UELM_GoogleAPIHelper::getApiKey();
 
 			$hasCredentials = empty($key) === false;
 		}
@@ -505,7 +505,7 @@ class UniteCreatorAPIIntegrations{
 	 */
 	private function validateGoogleApiKey(){
 
-		$key = UEGoogleAPIHelper::getApiKey();
+		$key = UELM_GoogleAPIHelper::getApiKey();
 
 		if(empty($key) === true)
 			UniteFunctionsUC::throwError(__("Google API key is missing.", "unlimited-elements-for-elementor"));
@@ -735,7 +735,7 @@ class UniteCreatorAPIIntegrations{
 		$includeCurrencies = array_filter($includeCurrencies);
 		$includeCurrencies = array_unique($includeCurrencies);
 
-		$exchangeService = new UEExchangeRateAPIClient($this->getExchangeRateApiKey());
+		$exchangeService = new UELM_ExchangeRateAPIClient($this->getExchangeRateApiKey());
 		$exchangeService->setCacheTime($cacheTime);
 
 		$rates = $exchangeService->getRates($currency);
@@ -825,7 +825,7 @@ class UniteCreatorAPIIntegrations{
 		$orderField = isset($orderFieldMap[$eventsOrder]) ? $orderFieldMap[$eventsOrder] : null;
 		$orderDirection = isset($orderDirectionMap[$eventsOrder]) ? $orderDirectionMap[$eventsOrder] : null;
 
-		$calendarService = new UEGoogleAPICalendarService();
+		$calendarService = new UELM_GoogleAPICalendarService();
 		$calendarService->setCacheTime($cacheTime);
 
 		if(GlobalsUnlimitedElements::$enableGoogleCalendarScopes === true)
@@ -962,7 +962,7 @@ class UniteCreatorAPIIntegrations{
 		
 		$cacheTime = $this->getCacheTimeParam(self::GOOGLE_REVIEWS_FIELD_CACHE_TIME, self::GOOGLE_REVIEWS_DEFAULT_CACHE_TIME);
 		
-		$placesService = new UEGoogleAPIPlacesService();
+		$placesService = new UELM_GoogleAPIPlacesService();
 		$placesService->setCacheTime($cacheTime);
 
 		$this->authorizeGoogleServiceWithApiKey($placesService);
@@ -985,7 +985,7 @@ class UniteCreatorAPIIntegrations{
 	 */
 	private function getGoogleReviewsData_serp($placeId){
 		
-		$placesService = new UEGoogleAPIPlacesService();
+		$placesService = new UELM_GoogleAPIPlacesService();
 
 		$placeParams = array();
 		
@@ -1056,7 +1056,7 @@ class UniteCreatorAPIIntegrations{
 				else
 					$message .= "<br> Output google reviews data using Official Google API";
 				
-				echo HelperHtmlUC::getDebugWarningMessageHtml($message);
+				HelperHtmlUC::putDebugWarningMessage($message);
 			} 
 		
 			$placeId = $this->getRequiredParam(self::GOOGLE_REVIEWS_FIELD_PLACE_ID, "Place ID");
@@ -1108,7 +1108,7 @@ class UniteCreatorAPIIntegrations{
 					$review->setSerpSource();
 
 				// Skip rating-only reviews with no written text
-				$textPlain = trim(strip_tags((string)$review->getText(false)));
+				$textPlain = wp_strip_all_tags((string)$review->getText(false));
 				if($textPlain === "")
 					continue;
 				
@@ -1133,7 +1133,7 @@ class UniteCreatorAPIIntegrations{
 				
 				$message = $e->getMessage();
 				
-				echo HelperHtmlUC::getErrorMessageHtml($message,"",true);
+				HelperHtmlUC::putErrorMessageHtml($message,"",true);
 			}
 			
 			throw $e;
@@ -1164,9 +1164,17 @@ class UniteCreatorAPIIntegrations{
 		$isSerpEnabled = $this->isGoogleReviewsSerpEnabled();
 		
 		if($isSerpEnabled == false)
-			$text = sprintf(__("To get more then 5 reviews, enter %s key in general settings", "unlimited-elements-for-elementor"), "<a href='https://serpapi.com' target='_blank'>serpapi.com</a>");
+			$text = sprintf(
+				/* translators: %s = link to serpapi.com */
+				__("To get more then 5 reviews, enter %s key in general settings", "unlimited-elements-for-elementor"),
+				"<a href='https://serpapi.com' target='_blank'>serpapi.com</a>"
+			);
 		else
-			$text = sprintf(__("Fetching google reviews using %s service.", "unlimited-elements-for-elementor"), "<a href='https://serpapi.com' target='_blank'>serpapi.com</a>");
+			$text = sprintf(
+				/* translators: %s = link to serpapi.com */
+				__("Fetching google reviews using %s service.", "unlimited-elements-for-elementor"),
+				"<a href='https://serpapi.com' target='_blank'>serpapi.com</a>"
+			);
 		
 		//if there is no option - no need for text
 		if(GlobalsUnlimitedElements::$enableSerpAPI == true){
@@ -1341,7 +1349,7 @@ class UniteCreatorAPIIntegrations{
 
 		$cacheTime = $this->getCacheTimeParam(self::GOOGLE_SHEETS_FIELD_CACHE_TIME, self::GOOGLE_SHEETS_DEFAULT_CACHE_TIME,$name);
 	
-		$sheetsService = new UEGoogleAPISheetsService();
+		$sheetsService = new UELM_GoogleAPISheetsService();
 		$sheetsService->setCacheTime($cacheTime);
 
 		$this->authorizeGoogleService($sheetsService);
@@ -1504,7 +1512,7 @@ class UniteCreatorAPIIntegrations{
 		$cacheTime = $this->getCacheTimeParam(self::WEATHER_FORECAST_FIELD_CACHE_TIME, self::WEATHER_FORECAST_DEFAULT_CACHE_TIME);
 		$locale = $this->getParam(self::WEATHER_FORECAST_FIELD_LOCALE, "");
 		
-		$weatherService = new UEOpenWeatherAPIClient($this->getOpenWeatherApiKey());
+		$weatherService = new UELM_OpenWeatherAPIClient($this->getOpenWeatherApiKey());
 		$weatherService->setCacheTime($cacheTime);
 		
 		$forecasts = $weatherService->getForecasts($country, $city, $units, $locale);
@@ -1685,7 +1693,7 @@ class UniteCreatorAPIIntegrations{
 		$orderField = isset($orderFieldMap[$itemsOrder]) ? $orderFieldMap[$itemsOrder] : null;
 		$orderDirection = isset($orderDirectionMap[$itemsOrder]) ? $orderDirectionMap[$itemsOrder] : null;
 
-		$youtubeService = new UEGoogleAPIYouTubeService();
+		$youtubeService = new UELM_GoogleAPIYouTubeService();
 		$youtubeService->setCacheTime($cacheTime);
 
 		if(GlobalsUnlimitedElements::$enableGoogleYoutubeScopes === true)
@@ -1705,7 +1713,7 @@ class UniteCreatorAPIIntegrations{
 				"date" => $item->getDate(self::FORMAT_DATETIME),
 				"title" => $item->getTitle(),
 				"description" => $item->getDescription(true),
-				"image" => $item->getImageUrl(UEGoogleAPIPlaylistItem::IMAGE_SIZE_MAX),
+				"image" => $item->getImageUrl(UELM_GoogleAPIPlaylistItem::IMAGE_SIZE_MAX),
 				"video_id" => $item->getVideoId(),
 				"video_date" => $item->getVideoDate(self::FORMAT_DATETIME),
 				"video_link" => $item->getVideoUrl(),
@@ -1783,7 +1791,7 @@ class UniteCreatorAPIIntegrations{
 	 */
 	private function addGoogleEmptyApiKeyField($fields, $id){
 
-		$key = UEGoogleAPIHelper::getApiKey();
+		$key = UELM_GoogleAPIHelper::getApiKey();
 
 		$fields = $this->addEmptyApiKeyField($fields, $key, $id, "Google API");
 
@@ -1833,12 +1841,12 @@ class UniteCreatorAPIIntegrations{
 		$html .= 'data-nonce="' . esc_attr($nonce) . '" ';
 		$html .= 'data-ajax-url="' . esc_attr($ajaxUrl) . '" ';
 		$html .= 'style="padding: 8px 16px; background: #0073aa; color: #fff; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;">';
-		$html .= __('Manual Refresh Reviews', 'unlimited-elements-for-elementor');
+		$html .= esc_html(__('Manual Refresh Reviews', 'unlimited-elements-for-elementor'));
 		$html .= '</button>';
 		$html .= '<span class="uc-google-reviews-refresh-status" style="margin-left: 10px; display: none;"></span>';
 		$html .= '</div>';
-		
-		echo $html;
+
+		HelperHtmlUC::putHtml($html);
 	}
 
 }

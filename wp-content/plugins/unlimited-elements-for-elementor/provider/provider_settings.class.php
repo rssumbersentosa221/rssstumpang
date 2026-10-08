@@ -1707,6 +1707,8 @@ class UniteCreatorSettings extends UniteCreatorSettingsWork{
 			$arrIncludeBy["products_from_post"] = __("Products From Post Content (woo)", "unlimited-elements-for-elementor");
 		}
 		
+		$arrIncludeBy = apply_filters("uelm_modify_post_select_includeby", $arrIncludeBy);
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 		$arrIncludeBy = apply_filters("ue_modify_post_select_includeby", $arrIncludeBy);
 		
 		
@@ -1962,7 +1964,7 @@ class UniteCreatorSettings extends UniteCreatorSettingsWork{
 		$params = array();
 		$params["origtype"] = UniteCreatorDialogParam::PARAM_TEXTFIELD;
 		$params["placeholder"] = __("getMyIDs", "unlimited-elements-for-elementor");
-		$params["description"] = __("Get post id's array from php function. \n For example: function getMyIDs(\$arg){return(array(\"32\",\"58\")). This function MUST begin with 'get'. }","unlimited-elements-for-elementor");
+		$params["description"] = __("Get post id's array from a PHP function. Add the function name in Unlimited Elements General Settings, under Allowed PHP Functions. Example: function getMyIDs(\$arg){return(array(\"32\",\"58\"));}. This function MUST begin with 'get'.","unlimited-elements-for-elementor");
 		$params["elementor_condition"] = $arrConditionIncludeFunction;
 
 		$this->addTextBox($name . "_includeby_function_name", "", esc_html__("PHP Function Name", "unlimited-elements-for-elementor"), $params);
@@ -2485,6 +2487,8 @@ class UniteCreatorSettings extends UniteCreatorSettingsWork{
 		$this->addHr($name . "_hr_after_order_dir", $params);
 		
 		//allow to modify settings by third party plugins
+		do_action("uelm_modify_post_list_settings", $this, $name);
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 		do_action("ue_modify_post_list_settings", $this, $name);
 
 		//---- query id -----
@@ -3113,7 +3117,7 @@ class UniteCreatorSettings extends UniteCreatorSettingsWork{
 
 		if(GlobalsUC::$isProVersion == true){
 			require_once GlobalsUC::$pathPro . "provider_settings_multisource_pro.class.php";
-			$objMultisourceSettings = new UniteCreatorSettingsMultisourcePro();
+			$objMultisourceSettings = new UELM_CreatorSettingsMultisourcePro();
 		}else{
 			//free version - add placeholders
 
@@ -3741,9 +3745,9 @@ class UniteCreatorSettings extends UniteCreatorSettingsWork{
 
         // Responsive Switchers
         $responsive_types = [
-            'advanced_hide_on_desktop' => 'Hide On Desktop',
-            'advanced_hide_on_tablet' => 'Hide On Tablet Portrait',
-            'advanced_hide_on_mobile' => 'Hide On Mobile Portrait'
+            'advanced_hide_on_desktop' => esc_html__('Hide On Desktop', 'unlimited-elements-for-elementor'),
+            'advanced_hide_on_tablet' => esc_html__('Hide On Tablet Portrait', 'unlimited-elements-for-elementor'),
+            'advanced_hide_on_mobile' => esc_html__('Hide On Mobile Portrait', 'unlimited-elements-for-elementor'),
         ];
         $sapKey = $this->getSapKeyByName('__uc_adv_responsive__');
         $this->currentSapKey = $sapKey;
@@ -3752,7 +3756,7 @@ class UniteCreatorSettings extends UniteCreatorSettingsWork{
                 $this->add(
                     $name,
                     0,
-                    esc_html__($label,'unlimited-elements-for-elementor'),
+                    $label,
                     self::TYPE_SWITCHER,
                     [
                         'tab'               => self::TAB_ADVANCED,

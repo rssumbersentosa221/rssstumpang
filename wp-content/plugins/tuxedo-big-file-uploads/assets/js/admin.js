@@ -1,8 +1,11 @@
 jQuery(document).ready(function ($) {
   $('[data-toggle="tooltip"]').tooltip();
 
-  //open modals from link
-  $(window.location.hash).modal('show');
+  //open modals from link; other anchors (like #bfu-email-summary) just scroll, as links do
+  var $hashTarget = window.location.hash ? $(document.getElementById(window.location.hash.slice(1))) : $();
+  if ($hashTarget.hasClass('modal')) {
+    $hashTarget.modal('show');
+  }
   $(".modal").on("hidden.bs.modal", function () { // any time a modal is hidden
     var urlReplace = window.location.toString().split('#', 1)[0];
     history.pushState(null, null, urlReplace); // push url without the hash as new history item
@@ -68,9 +71,45 @@ jQuery(document).ready(function ($) {
     });
   };
 
+  //"Personalize Your Report" questions, asked before the scan until subscribe is dismissed
+  var reportAnswered = function () {
+    return !$('#bfu-report-questions fieldset').filter(function () {
+      return !$(this).find('input:checked').length;
+    }).length;
+  };
+
+  var showScanStep = function (scanning) {
+    $('#bfu-report-questions').prop('hidden', scanning);
+    $('#bfu-scan-running').prop('hidden', !scanning);
+    $('#scan-modal').attr('aria-labelledby', scanning ? 'scan-modal-label' : 'bfu-report-label');
+    $('#bfu-report-start').prop('disabled', !reportAnswered());
+  };
+
+  $('#bfu-report-questions').on('change', 'input', function () {
+    $('#bfu-report-start').prop('disabled', !reportAnswered());
+  });
+
+  $('#bfu-report-start').on('click', function () {
+    if (!reportAnswered()) {
+      return;
+    }
+    //the answers are only sent if they subscribe, as hidden fields on the Mailchimp form
+    $('#bfu-report-questions fieldset').each(function () {
+      $('#mc-embedded-subscribe-form input[name="' + $(this).data('merge-tag') + '"]').val($(this).find('input:checked').val());
+    });
+    showScanStep(true);
+    $('#scan-modal').trigger('focus');
+    bfuStopLoop = false;
+    fileScan([]);
+  });
+
   //Scan local files
   $('#scan-modal').on('show.bs.modal', function () {
     $('#bfu-error').hide();
+    if ($('#bfu-report-questions').length) {
+      showScanStep(false);
+      return;
+    }
     bfuStopLoop = false;
     fileScan([]);
   }).on('hide.bs.modal', function () {

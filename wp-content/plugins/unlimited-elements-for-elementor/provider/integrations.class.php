@@ -6,6 +6,8 @@
  * @copyright Copyright (c) 2016 UniteCMS
  * @license http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 or later
 */
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 
 //no direct accees
 defined ('UNLIMITED_ELEMENTS_INC') or die ('restricted aceess');
@@ -135,7 +137,7 @@ class UniteCreatorPluginIntegrations{
 		
 			$strDebug .= "Popular posts query arguments:";
 			$strDebug .= "<pre>";
-			$strDebug .= print_r($params, true);
+			$strDebug .= uelm_html_debug($params);
 			$strDebug .= "</pre>";
 	
 			$numPosts = count($arrPosts);
@@ -680,6 +682,7 @@ class UniteCreatorPluginIntegrations{
 			return(false);
 						
 		if(!defined("DONOTCDN"))
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Constant name read by CDN plugins.
 			define("DONOTCDN",true);
 		
 		add_filter('shortpixel/image/filecheck', '__return_false');
@@ -812,6 +815,7 @@ class UniteCreatorPluginIntegrations{
 		$this->activeLang  = $objWPML->getActiveLanguage();
 
 		if ($stickyPostDefaultLangOption == true && $this->activeLang != $this->defaultLang){
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- External hook from WordPress or another plugin.
 			do_action('wpml_switch_language', $this->defaultLang);
 			add_action("ue_after_custom_posts_query", array($this, "resetStickyPostsToActiveLanguage"), 10);
 		}
@@ -821,6 +825,7 @@ class UniteCreatorPluginIntegrations{
 	 * reset sticky posts to active language
 	 */
 	public function resetStickyPostsToActiveLanguage() {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- External hook from WordPress or another plugin.
 		do_action('wpml_switch_language', $this->activeLang);
 	}
 	

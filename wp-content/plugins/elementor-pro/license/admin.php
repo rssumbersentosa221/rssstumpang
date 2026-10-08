@@ -227,7 +227,7 @@ class Admin {
 
 	public function register_page() {
 		return;
-
+		
 		if ( $this->is_editor_one_active() ) {
 			return;
 		}
@@ -407,7 +407,6 @@ class Admin {
 	}
 
 	private function render_part_license_status_header( $license_data ) {
-		$license_data['success'] = true;
 		$license_errors = [
 			API::STATUS_EXPIRED => esc_html__( 'Expired', 'elementor-pro' ),
 			API::STATUS_SITE_INACTIVE => esc_html__( 'Mismatch', 'elementor-pro' ),

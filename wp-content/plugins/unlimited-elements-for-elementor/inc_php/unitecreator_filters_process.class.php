@@ -322,9 +322,9 @@ class UniteCreatorFiltersProcess{
 	 */
 	private function getArrRequest(){
 		
-		$request = $_GET;
-		if(!empty($_POST))
-			$request = array_merge($request, $_POST);
+		$request = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public filter query args. The values are parsed as listing filters, not saved.
+		if(!empty($_POST)) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public filter query args. The values are parsed as listing filters, not saved.
+			$request = array_merge($request, $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public filter query args. The values are parsed as listing filters, not saved.
 		
 		//add from query vars:
 		
@@ -1314,12 +1314,12 @@ class UniteCreatorFiltersProcess{
 
 		$arrCleanValues = $this->expandMetaFilterArrayValues($arrCleanValues, $compare);
 
+		// Do not wrap LIKE values with %. WP_Meta_Query already does
+		// '%' . esc_like($value) . '%'. Extra % become literal \% and match nothing.
 		if($compare == "LIKE" || $compare == "NOT LIKE"){
 
 			foreach($arrCleanValues as $index => $val){
-
-				if(strpos($val, "%") === false)
-					$arrCleanValues[$index] = "%".$val."%";
+				$arrCleanValues[$index] = trim($val, "%");
 			}
 		}
 
@@ -2080,7 +2080,7 @@ class UniteCreatorFiltersProcess{
 
 		$currentUrl = GlobalsUC::$current_page_url;
 
-		$arrUrl = parse_url($currentUrl);
+		$arrUrl = wp_parse_url($currentUrl);
 
 		$query = "?".UniteFunctionsUC::getVal($arrUrl, "query");
 
@@ -2640,6 +2640,9 @@ class UniteCreatorFiltersProcess{
 			if(class_exists("UniteCreatorGutenbergIntegrate") == false)
 				UniteFunctionsUC::throwError("no gutenberg platform enabled");
 			
+			if(HelperProviderCoreUC_EL::isPostReadable($layoutID) == false)
+				UniteFunctionsUC::throwError(self::$platform." content not found");
+			
 			self::$objGutenberg = new UniteCreatorGutenbergIntegrate();
 
 			$arrContent = self::$objGutenberg->getPostBlocks($layoutID);
@@ -2930,7 +2933,7 @@ class UniteCreatorFiltersProcess{
 		if($responseCode != 200)
 			http_response_code(200);
 
-		define("UE_AJAX_SEARCH_ACTIVE", true);
+		define("UELM_AJAX_SEARCH_ACTIVE", true);
 		
 		GlobalsProviderUC::$isUnderAjax = true;
 		
@@ -3211,12 +3214,16 @@ class UniteCreatorFiltersProcess{
 
 		$taxSapSetting = HelperProviderCoreUC_EL::getGeneralSetting("tax_sap_sign");
 
+		$taxSapSetting = apply_filters("uelm_filters_url_key__taxonomy_sap", $taxSapSetting);
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 		$taxSapSetting = apply_filters("ue_filters_url_key__taxonomy_sap", $taxSapSetting);
 		
 		if(empty($taxSapSetting))
 			$taxSapSetting = "~";
 		
 		$arrParts = array();
+		$arrParts["tax_sap"] = apply_filters("uelm_filters_url_key__taxonomy_sap", $taxSapSetting);
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 		$arrParts["tax_sap"] = apply_filters("ue_filters_url_key__taxonomy_sap", $taxSapSetting);
 
 		return($arrParts);
@@ -3245,7 +3252,7 @@ class UniteCreatorFiltersProcess{
 		if(empty($search)){
 			$search = null;
 
-			if(isset($_GET["s"]) && $_GET["s"] == "")
+			if(isset($_GET["s"]) && $_GET["s"] == "") // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public search query arg, kept in the filter URL when it is present but empty.
 				$search = "";
 		}
 
@@ -4434,11 +4441,9 @@ s	 */
 		$setDisplayErrors = HelperProviderCoreUC_EL::getGeneralSetting("enable_display_errors_ajax");
 		$setDisplayErrors = UniteFunctionsUC::strToBool($setDisplayErrors);
 
-		if($setDisplayErrors == true){
-
+		if($setDisplayErrors == true)
+			// phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- Show PHP errors in Ajax when the general setting is enabled.
 			ini_set("display_errors", "on");
-			error_reporting(E_ALL);
-		}
 
 	}
 
@@ -4503,6 +4508,8 @@ s	 */
 				break;
 				case "custom":
 					
+					do_action("uelm_custom_front_ajax_action");
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook name kept for existing callbacks.
 					do_action("uc_custom_front_ajax_action");
 
 					//if not catch - will throw error
@@ -4548,8 +4555,8 @@ s	 */
 			
 		add_action("wp", array($this, "operateAjaxResponse"));
 		
-		add_action("ue_before_custom_posts_query", array($this, "onBeforeCustomPostsQuery"));
-		//add_action("ue_after_custom_posts_query", array($this, "onAfterCustomPostsQuery"));
+		add_action("uelm_before_custom_posts_query", array($this, "onBeforeCustomPostsQuery"));
+		//add_action("uelm_after_custom_posts_query", array($this, "onAfterCustomPostsQuery"));
 
 
 	}
